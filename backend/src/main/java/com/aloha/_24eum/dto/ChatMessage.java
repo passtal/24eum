@@ -1,12 +1,23 @@
 package com.aloha._24eum.dto;
 
-/**
- * 채팅 메시지 DTO (JSON)
- * - id, chatRoomId, senderId
- * - messageType (TEXT/IMAGE/FILE)
- * - content, fileUrl
- * - isRead
- * - createdAt
- */
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessage {
+    private Long id;
+    private Long chatRoomId;
+    private Long senderId;
+    private String messageType;        // TEXT/IMAGE/FILE
+    private String content;
+    private String fileUrl;
+    private Boolean isRead;
+    private LocalDateTime createdAt;
 }

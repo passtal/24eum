@@ -1,8 +1,14 @@
 package com.aloha._24eum.service;
 
-/**
- * 사용자 서비스 인터페이스
- * - 내 정보 CRUD, 비밀번호 변경, 회원 탈퇴
- */
+import com.aloha._24eum.dto.User;
+
 public interface UserService {
+    User signup(User user);
+    User getById(Long id);
+    User getByEmail(String email);
+    User updateProfile(User user);
+    void changePassword(Long id, String oldPassword, String newPassword);
+    void delete(Long id);
+    boolean isEmailAvailable(String email);
+    boolean isNicknameAvailable(String nickname);
 }

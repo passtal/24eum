@@ -1,10 +1,16 @@
 package com.aloha._24eum.dao;
 
-/**
- * 인증 Mapper (MyBatis)
- * - 로그인 정보 조회
- * - OAuth2 계정 연동 정보
- * - 토큰 관련
- */
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.aloha._24eum.dto.PersistentLogin;
+
+@Mapper
 public interface AuthMapper {
+    PersistentLogin findBySeries(@Param("series") String series);
+    int insertToken(PersistentLogin token);
+    int updateToken(@Param("series") String series,
+                    @Param("token") String token,
+                    @Param("lastUsed") java.time.LocalDateTime lastUsed);
+    int deleteByUsername(@Param("username") String username);
 }

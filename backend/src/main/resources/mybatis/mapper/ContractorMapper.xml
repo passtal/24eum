@@ -1,7 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ContractorMapper.xml - 시공업자 MyBatis SQL 매퍼 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aloha._24eum.dao.ContractorMapper">
 
+  <resultMap id="ContractorMap" type="Contractor">
+    <id     property="id"               column="id"/>
+    <result property="userId"           column="user_id"/>
+    <result property="companyName"      column="company_name"/>
+    <result property="businessNumber"   column="business_number"/>
+    <result property="career"           column="career"/>
+    <result property="certifications"   column="certifications"/>
+    <result property="preferredTypes"   column="preferred_types"/>
+    <result property="serviceArea"      column="service_area"/>
+    <result property="introduction"     column="introduction"/>
+    <result property="portfolioImages"  column="portfolio_images"/>
+    <result property="averageRating"    column="average_rating"/>
+    <result property="reviewCount"      column="review_count"/>
+    <result property="isBanned"         column="is_banned"/>
+    <result property="createdAt"        column="created_at"/>
+    <result property="updatedAt"        column="updated_at"/>
+    <result property="nickname"         column="nickname"/>
+    <result property="profileImage"     column="profile_image"/>
+  </resultMap>
+
+  <sql id="cols">
+    c.id, c.user_id, c.company_name, c.business_number, c.career, c.certifications,
+    c.preferred_types, c.service_area, c.introduction, c.portfolio_images,
+    c.average_rating, c.review_count, c.is_banned, c.created_at, c.updated_at,
+    u.nickname AS nickname, u.profile_image AS profile_image
+  </sql>
+
+  <select id="findAll" resultMap="ContractorMap">
+    SELECT <include refid="cols"/>
+      FROM contractors c
+      JOIN users u ON u.id = c.user_id
+    <where>
+      AND c.is_banned = 0
+      <if test="keyword != null and keyword != ''">
+        AND (c.company_name LIKE CONCAT('%', #{keyword}, '%')
+          OR c.service_area LIKE CONCAT('%', #{keyword}, '%')
+          OR c.preferred_types LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+    ORDER BY c.average_rating DESC, c.review_count DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="countAll" resultType="long">
+    SELECT COUNT(1) FROM contractors c
+    <where>
+      AND c.is_banned = 0
+      <if test="keyword != null and keyword != ''">
+        AND (c.company_name LIKE CONCAT('%', #{keyword}, '%')
+          OR c.service_area LIKE CONCAT('%', #{keyword}, '%')
+          OR c.preferred_types LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+  </select>
+
+  <select id="findById" resultMap="ContractorMap">
+    SELECT <include refid="cols"/>
+      FROM contractors c
+      JOIN users u ON u.id = c.user_id
+     WHERE c.id = #{id}
+  </select>
+
+  <select id="findByUserId" resultMap="ContractorMap">
+    SELECT <include refid="cols"/>
+      FROM contractors c
+      JOIN users u ON u.id = c.user_id
+     WHERE c.user_id = #{userId}
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Contractor">
+    INSERT INTO contractors
+      (user_id, company_name, business_number, career, certifications,
+       preferred_types, service_area, introduction, portfolio_images)
+    VALUES
+      (#{userId}, #{companyName}, #{businessNumber}, #{career}, #{certifications},
+       #{preferredTypes}, #{serviceArea}, #{introduction}, #{portfolioImages})
+  </insert>
+
+  <update id="update" parameterType="Contractor">
+    UPDATE contractors
+       SET company_name = #{companyName},
+           business_number = #{businessNumber},
+           career = #{career},
+           certifications = #{certifications},
+           preferred_types = #{preferredTypes},
+           service_area = #{serviceArea},
+           introduction = #{introduction},
+           portfolio_images = #{portfolioImages}
+     WHERE id = #{id}
+  </update>
+
+  <delete id="delete">DELETE FROM contractors WHERE id = #{id}</delete>
+
+  <update id="updateBan">
+    UPDATE contractors SET is_banned = #{isBanned} WHERE id = #{id}
+  </update>
+
+  <update id="recomputeRating">
+    UPDATE contractors c
+      LEFT JOIN (
+        SELECT contractor_id,
+               ROUND(AVG(rating), 2) AS avg_rating,
+               COUNT(1)              AS cnt
+          FROM reviews
+         WHERE is_hidden = 0
+         GROUP BY contractor_id
+      ) r ON r.contractor_id = c.id
+       SET c.average_rating = COALESCE(r.avg_rating, 0),
+           c.review_count   = COALESCE(r.cnt, 0)
+     WHERE c.id = #{id}
+  </update>
 </mapper>

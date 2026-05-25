@@ -1,9 +1,15 @@
 package com.aloha._24eum.service;
 
-/**
- * 시공업자 서비스 인터페이스
- * - 업자 등록/수정/조회
- * - 포트폴리오 관리
- */
+import java.util.List;
+
+import com.aloha._24eum.dto.Contractor;
+
 public interface ContractorService {
+    List<Contractor> list(String keyword, int page, int size);
+    long countAll(String keyword);
+    Contractor get(Long id, Long currentUserId);
+    Contractor getByUserId(Long userId);
+    Contractor create(Contractor contractor);
+    Contractor update(Contractor contractor);
+    void delete(Long id);
 }

@@ -8,6 +8,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // sockjs-client 가 Node 글로벌 `global` 을 참조해서 브라우저에서 ReferenceError 가 남.
+  // globalThis 로 매핑하여 호환.
+  define: {
+    global: 'globalThis',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

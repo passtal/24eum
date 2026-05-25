@@ -1,8 +1,18 @@
 package com.aloha._24eum.controller;
 
-/**
- * 홈 컨트롤러
- * - GET / : 메인 페이지
- */
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
 public class HomeController {
+
+    @GetMapping("/")
+    public Map<String, Object> home() {
+        return Map.of(
+                "service", "24eum",
+                "status",  "ok"
+        );
+    }
 }

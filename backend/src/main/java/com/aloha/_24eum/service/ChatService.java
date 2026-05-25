@@ -1,10 +1,17 @@
 package com.aloha._24eum.service;
 
-/**
- * 채팅 서비스 인터페이스
- * - 채팅방 생성/조회
- * - 메시지 저장/조회 (JSON)
- * - WebSocket 메시지 핸들링
- */
+import java.util.List;
+
+import com.aloha._24eum.dto.ChatMessage;
+import com.aloha._24eum.dto.ChatRoom;
+
 public interface ChatService {
+    ChatRoom getOrCreateRoom(Long userId, Long contractorId, Long estimateRequestId);
+    ChatRoom get(Long roomId);
+    List<ChatRoom> listByUser(Long userId);
+    List<ChatRoom> listByContractorUser(Long contractorUserId);
+
+    ChatMessage send(ChatMessage message);
+    List<ChatMessage> history(Long roomId, int page, int size);
+    int markRead(Long roomId, Long readerId);
 }

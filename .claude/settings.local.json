@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "PowerShell(winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements --silent --disable-interactivity 2>&1)",
+      "Bash(pkill -f \"vite/bin/vite.js\")",
+      "Bash(echo \"new vite PID: $!\")",
+      "PowerShell(@\\(23736, 30648, 2139\\) | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; Write-Output \"--- remaining ---\"; @\\(5173, 5174, 5175\\) | ForEach-Object { $p = \\(Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue\\).OwningProcess; if \\($p\\) { Write-Output \"port $_ still held by PID $p\"; Stop-Process -Id $p -Force -ErrorAction SilentlyContinue } else { Write-Output \"port $_ free\" } }; Start-Sleep -Seconds 1; Write-Output \"--- final ---\"; Get-NetTCPConnection -LocalPort 5173,5174,5175 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalPort, OwningProcess)",
+      "Bash(nohup \"/c/Program Files/nodejs/node.exe\" node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 --strictPort)",
+      "Bash(curl -s \"http://127.0.0.1:5173/node_modules/.vite/deps/sockjs-client.js?v=test\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://127.0.0.1:5173/api/designs)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3306 -InformationLevel Quiet -WarningAction SilentlyContinue)",
+      "PowerShell($paths = @\\(\\); Get-ChildItem -Path 'C:\\\\Program Files\\\\MySQL', 'C:\\\\Program Files \\(x86\\)\\\\MySQL' -Filter 'mysqld.exe' -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $paths += $_.FullName }; if \\($paths.Count -eq 0\\) { Get-ChildItem -Path 'C:\\\\xampp\\\\mysql\\\\bin', 'C:\\\\wamp64\\\\bin\\\\mysql', 'C:\\\\ProgramData\\\\MySQL' -Filter 'mysqld.exe' -Recurse -ErrorAction SilentlyContinue | ForEach-Object { $paths += $_.FullName } }; if \\($paths.Count -eq 0\\) { \\(Get-Command mysqld -ErrorAction SilentlyContinue\\).Source } else { $paths })",
+      "PowerShell($ini = @\\('C:\\\\ProgramData\\\\MySQL\\\\MySQL Server 8.4\\\\my.ini', 'C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.4\\\\my.ini'\\); $ini | ForEach-Object { if \\(Test-Path $_\\) { \"INI: $_\" } }; $data = @\\('C:\\\\ProgramData\\\\MySQL\\\\MySQL Server 8.4\\\\Data', 'C:\\\\Program Files\\\\MySQL\\\\MySQL Server 8.4\\\\Data'\\); $data | ForEach-Object { if \\(Test-Path $_\\) { \"DATA: $_ \\($\\(\\(\\(Get-ChildItem $_ -ErrorAction SilentlyContinue\\).Count\\)\\) items\\)\" } })",
+      "Read(//c/ProgramData/MySQL/MySQL Server 8.4/**)",
+      "Read(//c/ProgramData/MySQL/**)",
+      "PowerShell(winget search --id Oracle.MySQLWorkbench --exact 2>&1)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\orbiy\\AppData\\Local\\Temp"
+    ]
+  }
+}

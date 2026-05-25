@@ -1,8 +1,12 @@
 package com.aloha._24eum.service;
 
-/**
- * 좋아요(찜) 서비스 인터페이스
- * - 찜 추가/해제/목록 조회
- */
+import java.util.List;
+
+import com.aloha._24eum.dto.Contractor;
+
 public interface LikeService {
+    void add(Long userId, Long contractorId);
+    void remove(Long userId, Long contractorId);
+    boolean isLiked(Long userId, Long contractorId);
+    List<Contractor> listLiked(Long userId);
 }

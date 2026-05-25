@@ -1,6 +1,7 @@
-// App 컴포넌트
+import AppRoutes from './routes'
+
 function App() {
-  return <div>App</div>
+  return <AppRoutes />
 }
 
 export default App

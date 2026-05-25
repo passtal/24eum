@@ -1,7 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- DesignMapper.xml - 디자인 모델 MyBatis SQL 매퍼 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aloha._24eum.dao.DesignMapper">
 
+  <resultMap id="DesignMap" type="DesignModel">
+    <id     property="id"             column="id"/>
+    <result property="modelCode"      column="model_code"/>
+    <result property="name"           column="name"/>
+    <result property="description"    column="description"/>
+    <result property="thumbnailImage" column="thumbnail_image"/>
+    <result property="detailImages"   column="detail_images"/>
+    <result property="basePrice"      column="base_price"/>
+    <result property="category"       column="category"/>
+    <result property="styleKeywords"  column="style_keywords"/>
+    <result property="createdAt"      column="created_at"/>
+    <result property="updatedAt"      column="updated_at"/>
+  </resultMap>
+
+  <sql id="cols">
+    id, model_code, name, description, thumbnail_image, detail_images,
+    base_price, category, style_keywords, created_at, updated_at
+  </sql>
+
+  <select id="findAll" resultMap="DesignMap">
+    SELECT <include refid="cols"/> FROM design_models ORDER BY model_code
+  </select>
+
+  <select id="findById" resultMap="DesignMap">
+    SELECT <include refid="cols"/> FROM design_models WHERE id = #{id}
+  </select>
+
+  <select id="findByCode" resultMap="DesignMap">
+    SELECT <include refid="cols"/> FROM design_models WHERE model_code = #{code}
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="DesignModel">
+    INSERT INTO design_models
+      (model_code, name, description, thumbnail_image, detail_images, base_price, category, style_keywords)
+    VALUES
+      (#{modelCode}, #{name}, #{description}, #{thumbnailImage}, #{detailImages},
+       #{basePrice}, #{category}, #{styleKeywords})
+  </insert>
+
+  <update id="update" parameterType="DesignModel">
+    UPDATE design_models
+       SET name = #{name},
+           description = #{description},
+           thumbnail_image = #{thumbnailImage},
+           detail_images = #{detailImages},
+           base_price = #{basePrice},
+           category = #{category},
+           style_keywords = #{styleKeywords}
+     WHERE id = #{id}
+  </update>
+
+  <delete id="delete">DELETE FROM design_models WHERE id = #{id}</delete>
 </mapper>

@@ -1,9 +1,20 @@
 package com.aloha._24eum.dao;
 
-/**
- * 채팅 메시지 Mapper (MyBatis)
- * - 메시지 저장/조회 (JSON)
- * - 채팅방별 메시지 페이징 조회
- */
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.aloha._24eum.dto.ChatMessage;
+
+@Mapper
 public interface ChatMessageMapper {
+    int insert(ChatMessage message);
+    List<ChatMessage> findByRoom(@Param("chatRoomId") Long chatRoomId,
+                                 @Param("offset") int offset,
+                                 @Param("limit") int limit);
+    int markRead(@Param("chatRoomId") Long chatRoomId,
+                 @Param("readerId") Long readerId);
+    int countUnread(@Param("chatRoomId") Long chatRoomId,
+                    @Param("readerId") Long readerId);
 }

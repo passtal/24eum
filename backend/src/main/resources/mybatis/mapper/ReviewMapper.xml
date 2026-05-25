@@ -1,7 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ReviewMapper.xml - 리뷰 MyBatis SQL 매퍼 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aloha._24eum.dao.ReviewMapper">
 
+  <resultMap id="ReviewMap" type="Review">
+    <id     property="id"                column="id"/>
+    <result property="userId"            column="user_id"/>
+    <result property="contractorId"      column="contractor_id"/>
+    <result property="estimateRequestId" column="estimate_request_id"/>
+    <result property="rating"            column="rating"/>
+    <result property="content"           column="content"/>
+    <result property="images"            column="images"/>
+    <result property="isHidden"          column="is_hidden"/>
+    <result property="createdAt"         column="created_at"/>
+    <result property="updatedAt"         column="updated_at"/>
+    <result property="userNickname"      column="user_nickname"/>
+    <result property="contractorName"    column="contractor_name"/>
+  </resultMap>
+
+  <sql id="cols">
+    r.id, r.user_id, r.contractor_id, r.estimate_request_id, r.rating, r.content,
+    r.images, r.is_hidden, r.created_at, r.updated_at,
+    u.nickname     AS user_nickname,
+    c.company_name AS contractor_name
+  </sql>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="Review">
+    INSERT INTO reviews (user_id, contractor_id, estimate_request_id, rating, content, images)
+    VALUES (#{userId}, #{contractorId}, #{estimateRequestId}, #{rating}, #{content}, #{images})
+  </insert>
+
+  <update id="update" parameterType="Review">
+    UPDATE reviews
+       SET rating = #{rating},
+           content = #{content},
+           images = #{images}
+     WHERE id = #{id}
+  </update>
+
+  <delete id="delete">DELETE FROM reviews WHERE id = #{id}</delete>
+
+  <update id="updateHidden">
+    UPDATE reviews SET is_hidden = #{isHidden} WHERE id = #{id}
+  </update>
+
+  <select id="findById" resultMap="ReviewMap">
+    SELECT <include refid="cols"/>
+      FROM reviews r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.id = #{id}
+  </select>
+
+  <select id="findByContractor" resultMap="ReviewMap">
+    SELECT <include refid="cols"/>
+      FROM reviews r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.contractor_id = #{contractorId}
+       AND r.is_hidden = 0
+     ORDER BY r.created_at DESC
+  </select>
+
+  <select id="findByUser" resultMap="ReviewMap">
+    SELECT <include refid="cols"/>
+      FROM reviews r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.user_id = #{userId}
+     ORDER BY r.created_at DESC
+  </select>
+
+  <select id="findAll" resultMap="ReviewMap">
+    SELECT <include refid="cols"/>
+      FROM reviews r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+    <where>
+      <if test="keyword != null and keyword != ''">
+        AND (u.nickname LIKE CONCAT('%', #{keyword}, '%')
+          OR c.company_name LIKE CONCAT('%', #{keyword}, '%')
+          OR r.content LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+    ORDER BY r.created_at DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="countAll" resultType="long">
+    SELECT COUNT(1) FROM reviews r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+    <where>
+      <if test="keyword != null and keyword != ''">
+        AND (u.nickname LIKE CONCAT('%', #{keyword}, '%')
+          OR c.company_name LIKE CONCAT('%', #{keyword}, '%')
+          OR r.content LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+  </select>
 </mapper>

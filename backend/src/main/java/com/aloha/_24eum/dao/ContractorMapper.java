@@ -1,10 +1,26 @@
 package com.aloha._24eum.dao;
 
-/**
- * 시공업자 Mapper (MyBatis)
- * - 업자 CRUD
- * - 조건별 업자 검색 (시공형태, 경력, 자격증, 지역)
- * - 매칭용 업자 목록 조회
- */
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.aloha._24eum.dto.Contractor;
+
+@Mapper
 public interface ContractorMapper {
+    List<Contractor> findAll(@Param("keyword") String keyword,
+                             @Param("offset") int offset,
+                             @Param("limit") int limit);
+    long countAll(@Param("keyword") String keyword);
+
+    Contractor findById(@Param("id") Long id);
+    Contractor findByUserId(@Param("userId") Long userId);
+
+    int insert(Contractor contractor);
+    int update(Contractor contractor);
+    int delete(@Param("id") Long id);
+    int updateBan(@Param("id") Long id, @Param("isBanned") boolean isBanned);
+
+    int recomputeRating(@Param("id") Long id);
 }

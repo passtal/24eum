@@ -1,9 +1,19 @@
 package com.aloha._24eum.dto;
 
-/**
- * 좋아요(찜) DTO
- * - id, userId, contractorId
- * - createdAt
- */
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContractorLike {
+    private Long id;
+    private Long userId;
+    private Long contractorId;
+    private LocalDateTime createdAt;
 }

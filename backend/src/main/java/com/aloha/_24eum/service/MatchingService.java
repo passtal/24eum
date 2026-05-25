@@ -1,10 +1,12 @@
 package com.aloha._24eum.service;
 
-/**
- * 업자 매칭 서비스 인터페이스
- * - DB에서 조건에 맞는 업자 추출
- * - 매칭 점수 계산 (선호 시공형태, 경력, 자격증, 지역, 별점 가중치)
- * - 상위 5명 추천
- */
+import java.util.List;
+
+import com.aloha._24eum.dto.EstimateRequest;
+import com.aloha._24eum.dto.MatchingResult;
+
 public interface MatchingService {
+    /** 견적 요청을 기반으로 Top 5 업자 매칭 → DB 저장 후 반환 */
+    List<MatchingResult> matchTop5(EstimateRequest req);
+    List<MatchingResult> findByEstimate(Long estimateRequestId);
 }

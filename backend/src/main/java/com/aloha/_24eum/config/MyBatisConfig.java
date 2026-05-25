@@ -1,7 +1,9 @@
 package com.aloha._24eum.config;
 
-/**
- * MyBatis 설정
- */
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@MapperScan(basePackages = "com.aloha._24eum.dao")
 public class MyBatisConfig {
 }

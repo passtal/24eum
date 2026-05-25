@@ -1,11 +1,26 @@
 package com.aloha._24eum.dto;
 
-/**
- * 업자 매칭 결과 DTO
- * - id, estimateRequestId, contractorId
- * - matchScore (매칭 점수), rank (추천 순위 1~5)
- * - status (RECOMMENDED/SELECTED/REJECTED)
- * - createdAt
- */
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MatchingResult {
+    private Long id;
+    private Long estimateRequestId;
+    private Long contractorId;
+    private BigDecimal matchScore;
+    private Integer matchRank;         // DB 컬럼명 (1~5)
+    private String status;             // RECOMMENDED/SELECTED/REJECTED
+    private LocalDateTime createdAt;
+
+    // 조인 조회용
+    private Contractor contractor;
 }

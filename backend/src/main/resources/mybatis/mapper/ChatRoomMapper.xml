@@ -1,7 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ChatRoomMapper.xml - 채팅방 MyBatis SQL 매퍼 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aloha._24eum.dao.ChatRoomMapper">
 
+  <resultMap id="ChatRoomMap" type="ChatRoom">
+    <id     property="id"                  column="id"/>
+    <result property="userId"              column="user_id"/>
+    <result property="contractorId"        column="contractor_id"/>
+    <result property="estimateRequestId"   column="estimate_request_id"/>
+    <result property="lastMessage"         column="last_message"/>
+    <result property="lastMessageAt"       column="last_message_at"/>
+    <result property="createdAt"           column="created_at"/>
+    <result property="userNickname"        column="user_nickname"/>
+    <result property="contractorName"      column="contractor_name"/>
+  </resultMap>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="ChatRoom">
+    INSERT INTO chat_rooms (user_id, contractor_id, estimate_request_id)
+    VALUES (#{userId}, #{contractorId}, #{estimateRequestId})
+  </insert>
+
+  <select id="findById" resultMap="ChatRoomMap">
+    SELECT r.id, r.user_id, r.contractor_id, r.estimate_request_id,
+           r.last_message, r.last_message_at, r.created_at,
+           u.nickname     AS user_nickname,
+           c.company_name AS contractor_name
+      FROM chat_rooms r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.id = #{id}
+  </select>
+
+  <select id="findExisting" resultMap="ChatRoomMap">
+    SELECT r.id, r.user_id, r.contractor_id, r.estimate_request_id,
+           r.last_message, r.last_message_at, r.created_at,
+           u.nickname     AS user_nickname,
+           c.company_name AS contractor_name
+      FROM chat_rooms r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.user_id = #{userId}
+       AND r.contractor_id = #{contractorId}
+       <choose>
+         <when test="estimateRequestId != null">
+           AND r.estimate_request_id = #{estimateRequestId}
+         </when>
+         <otherwise>
+           AND r.estimate_request_id IS NULL
+         </otherwise>
+       </choose>
+     LIMIT 1
+  </select>
+
+  <select id="findByUser" resultMap="ChatRoomMap">
+    SELECT r.id, r.user_id, r.contractor_id, r.estimate_request_id,
+           r.last_message, r.last_message_at, r.created_at,
+           u.nickname     AS user_nickname,
+           c.company_name AS contractor_name
+      FROM chat_rooms r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE r.user_id = #{userId}
+     ORDER BY COALESCE(r.last_message_at, r.created_at) DESC
+  </select>
+
+  <select id="findByContractorUser" resultMap="ChatRoomMap">
+    SELECT r.id, r.user_id, r.contractor_id, r.estimate_request_id,
+           r.last_message, r.last_message_at, r.created_at,
+           u.nickname     AS user_nickname,
+           c.company_name AS contractor_name
+      FROM chat_rooms r
+      JOIN users       u ON u.id = r.user_id
+      JOIN contractors c ON c.id = r.contractor_id
+     WHERE c.user_id = #{contractorUserId}
+     ORDER BY COALESCE(r.last_message_at, r.created_at) DESC
+  </select>
+
+  <update id="updateLastMessage">
+    UPDATE chat_rooms
+       SET last_message = #{lastMessage},
+           last_message_at = #{lastMessageAt}
+     WHERE id = #{id}
+  </update>
 </mapper>

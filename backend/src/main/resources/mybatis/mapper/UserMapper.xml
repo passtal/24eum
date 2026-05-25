@@ -1,7 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- UserMapper.xml - 사용자 MyBatis SQL 매퍼 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aloha._24eum.dao.UserMapper">
 
+  <resultMap id="UserMap" type="User">
+    <id     property="id"            column="id"/>
+    <result property="email"         column="email"/>
+    <result property="password"      column="password"/>
+    <result property="nickname"      column="nickname"/>
+    <result property="phone"         column="phone"/>
+    <result property="role"          column="role"/>
+    <result property="provider"      column="provider"/>
+    <result property="providerId"    column="provider_id"/>
+    <result property="profileImage"  column="profile_image"/>
+    <result property="isBanned"      column="is_banned"/>
+    <result property="bannedAt"      column="banned_at"/>
+    <result property="bannedReason"  column="banned_reason"/>
+    <result property="createdAt"     column="created_at"/>
+    <result property="updatedAt"     column="updated_at"/>
+  </resultMap>
+
+  <sql id="cols">
+    id, email, password, nickname, phone, role, provider, provider_id,
+    profile_image, is_banned, banned_at, banned_reason, created_at, updated_at
+  </sql>
+
+  <select id="findById" resultMap="UserMap">
+    SELECT <include refid="cols"/> FROM users WHERE id = #{id}
+  </select>
+
+  <select id="findByEmail" resultMap="UserMap">
+    SELECT <include refid="cols"/> FROM users WHERE email = #{email}
+  </select>
+
+  <select id="findByProvider" resultMap="UserMap">
+    SELECT <include refid="cols"/> FROM users
+    WHERE provider = #{provider} AND provider_id = #{providerId}
+  </select>
+
+  <select id="existsByEmail" resultType="boolean">
+    SELECT COUNT(1) FROM users WHERE email = #{email}
+  </select>
+
+  <select id="existsByNickname" resultType="boolean">
+    SELECT COUNT(1) FROM users WHERE nickname = #{nickname}
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="User">
+    INSERT INTO users (email, password, nickname, phone, role, provider, provider_id, profile_image)
+    VALUES (#{email}, #{password}, #{nickname}, #{phone},
+            COALESCE(#{role}, 'USER'),
+            COALESCE(#{provider}, 'LOCAL'),
+            #{providerId}, #{profileImage})
+  </insert>
+
+  <update id="update" parameterType="User">
+    UPDATE users
+       SET nickname      = #{nickname},
+           phone         = #{phone},
+           profile_image = #{profileImage}
+     WHERE id = #{id}
+  </update>
+
+  <update id="updatePassword">
+    UPDATE users SET password = #{password} WHERE id = #{id}
+  </update>
+
+  <update id="updateBan">
+    UPDATE users
+       SET is_banned = #{isBanned},
+           banned_at = CASE WHEN #{isBanned} THEN NOW() ELSE NULL END,
+           banned_reason = #{reason}
+     WHERE id = #{id}
+  </update>
+
+  <delete id="delete">
+    DELETE FROM users WHERE id = #{id}
+  </delete>
+
+  <select id="findAll" resultMap="UserMap">
+    SELECT <include refid="cols"/> FROM users
+    <where>
+      <if test="role != null and role != ''">AND role = #{role}</if>
+      <if test="keyword != null and keyword != ''">
+        AND (email LIKE CONCAT('%', #{keyword}, '%') OR nickname LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+    ORDER BY id DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="countAll" resultType="long">
+    SELECT COUNT(1) FROM users
+    <where>
+      <if test="role != null and role != ''">AND role = #{role}</if>
+      <if test="keyword != null and keyword != ''">
+        AND (email LIKE CONCAT('%', #{keyword}, '%') OR nickname LIKE CONCAT('%', #{keyword}, '%'))
+      </if>
+    </where>
+  </select>
 </mapper>

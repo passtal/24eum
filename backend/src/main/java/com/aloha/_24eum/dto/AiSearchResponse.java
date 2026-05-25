@@ -1,9 +1,19 @@
 package com.aloha._24eum.dto;
 
-/**
- * AI 검색 응답 DTO
- * - query, response, model
- * - createdAt
- */
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AiSearchResponse {
+    private String query;
+    private String response;
+    private String model;
+    private LocalDateTime createdAt;
 }

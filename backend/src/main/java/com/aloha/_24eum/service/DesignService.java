@@ -1,8 +1,14 @@
 package com.aloha._24eum.service;
 
-/**
- * 디자인 모델 서비스 인터페이스
- * - 디자인 모델 CRUD
- */
+import java.util.List;
+
+import com.aloha._24eum.dto.DesignModel;
+
 public interface DesignService {
+    List<DesignModel> list();
+    DesignModel get(Long id);
+    DesignModel getByCode(String code);
+    DesignModel create(DesignModel design);
+    DesignModel update(DesignModel design);
+    void delete(Long id);
 }

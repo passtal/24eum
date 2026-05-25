@@ -1,12 +1,26 @@
 package com.aloha._24eum.dto;
 
-/**
- * 인테리어/디자인 모델 DTO
- * - id, modelCode (A/B/C/D), name, description
- * - thumbnailImage, detailImages
- * - basePrice (기본 가격대), category
- * - styleKeywords (스타일 키워드)
- * - createdAt, updatedAt
- */
+import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DesignModel {
+    private Long id;
+    private String modelCode;          // A / B / C / D
+    private String name;
+    private String description;
+    private String thumbnailImage;
+    private String detailImages;       // JSON 배열 문자열
+    private Long basePrice;
+    private String category;
+    private String styleKeywords;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
