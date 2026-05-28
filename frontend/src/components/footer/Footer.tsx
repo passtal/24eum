@@ -36,11 +36,20 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* 회사 */}
+          {/* 프로젝트 */}
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-ink-400">회사</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-ink-400">프로젝트</div>
             <ul className="mt-4 space-y-2.5 text-sm">
-              <li><span className="text-ink-700">팀 aloha</span></li>
+              <li>
+                <a
+                  href="https://github.com/passtal/24eum"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-ink-700 hover:text-brand-600"
+                >
+                  GitHub
+                </a>
+              </li>
               <li><span className="text-ink-700">이용약관</span></li>
               <li><span className="text-ink-700">개인정보처리방침</span></li>
               <li><span className="text-ink-700">고객센터</span></li>
@@ -49,7 +58,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-2 border-t border-ink-200 pt-6 text-xs text-ink-500 md:flex-row md:items-center">
-          <p>© {year} 24이음 (24eum) · aloha team. All rights reserved.</p>
+          <p>© {year} 24이음 (24eum). All rights reserved.</p>
           <p>Made with care for better interior matching.</p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { motion, useInView } from 'motion/react'
 import useEmblaCarousel from 'embla-carousel-react'
 import * as Accordion from '@radix-ui/react-accordion'
 import api from '../../api/axios'
+import { resolveDesignImage } from '../../utils/designImages'
 
 type Design = { id: number; modelCode: string; name: string; description?: string; thumbnailImage?: string }
 
@@ -115,48 +116,62 @@ function Hero({ designs }: { designs: Design[] }) {
 }
 
 function HeroCollage({ designs }: { designs: Design[] }) {
-  // 4장 stacked rotated cards. 데이터가 없어도 placeholder로 보이게.
-  const slots = [0, 1, 2, 3].map((i) => designs[i])
-  const transforms = [
-    'md:translate-x-0 md:translate-y-0 md:rotate-[-6deg]',
-    'md:translate-x-[60%] md:-translate-y-2 md:rotate-[4deg]',
-    'md:translate-x-[10%] md:translate-y-[55%] md:rotate-[3deg]',
-    'md:translate-x-[68%] md:translate-y-[52%] md:rotate-[-3deg]',
-  ]
   const labels = ['A', 'B', 'C', 'D']
+  const slots = [0, 1, 2, 3].map((i) => designs[i])
+
+  // 4장이 4분면처럼 분산되되 살짝 겹치는 콜라주. hover 시 해당 카드가 z-50으로 떠오름.
+  const positions = [
+    'left-[2%]  top-[2%]',   // A 좌상단
+    'left-[48%] top-0',      // B 우상단
+    'left-0     top-[48%]',  // C 좌하단
+    'left-[46%] top-[46%]',  // D 우하단
+  ]
+  const rotates = [-8, 6, 5, -4]
+  const zBase = [40, 30, 20, 10]
+  const captions = [
+    '모던 미니멀',
+    '따뜻한 우드',
+    '클래식 럭셔리',
+    '인더스트리얼',
+  ]
 
   return (
-    <div className="relative hidden h-[460px] md:block">
-      {slots.map((d, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
-          className={`absolute h-[230px] w-[200px] overflow-hidden rounded-2xl bg-white shadow-xl shadow-ink-900/10 ring-1 ring-ink-200 ${transforms[i]}`}
-          style={{ zIndex: 10 - i }}
-        >
-          <div className="relative h-[150px] overflow-hidden bg-gradient-to-br from-brand-100 to-ink-100">
-            {d?.thumbnailImage ? (
-              <img src={d.thumbnailImage} alt={d.name} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full items-center justify-center text-4xl font-black tracking-tighter text-ink-400">
-                {d?.modelCode ?? labels[i]}
-              </div>
-            )}
-            <span className="absolute left-2 top-2 rounded-md bg-white/95 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-ink-900">
-              {d?.modelCode ?? labels[i]}
-            </span>
-          </div>
-          <div className="p-3">
-            <div className="text-[13px] font-semibold text-ink-900">{d?.name ?? `Design ${labels[i]}`}</div>
-            <div className="mt-0.5 line-clamp-1 text-[11px] text-ink-500">
-              {d?.description ?? '모던 · 클래식 · 미니멀'}
+    <div className="relative hidden h-[500px] md:block">
+      {slots.map((d, i) => {
+        const code = d?.modelCode ?? labels[i]
+        const img = resolveDesignImage(d, labels[i])
+        const title = d?.name ?? captions[i]
+        const desc = d?.description ?? '큐레이션된 디자인 모델'
+
+        return (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20, scale: 0.95, rotate: rotates[i] }}
+            animate={{ opacity: 1, y: 0, scale: 1, rotate: rotates[i] }}
+            whileHover={{ y: -14, scale: 1.06, rotate: 0, zIndex: 50, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
+            transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className={`absolute h-[240px] w-[200px] overflow-hidden rounded-2xl bg-white shadow-xl shadow-ink-900/15 ring-1 ring-ink-200 ${positions[i]}`}
+            style={{ zIndex: zBase[i] }}
+          >
+            <div className="relative h-[150px] overflow-hidden bg-gradient-to-br from-brand-100 to-ink-100">
+              {img ? (
+                <img src={img} alt={title} className="h-full w-full object-cover" loading="lazy" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-4xl font-black tracking-tighter text-ink-400">
+                  {code}
+                </div>
+              )}
+              <span className="absolute left-2 top-2 rounded-md bg-white/95 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-ink-900">
+                {code}
+              </span>
             </div>
-          </div>
-        </motion.div>
-      ))}
+            <div className="p-3">
+              <div className="text-[13px] font-semibold text-ink-900">{title}</div>
+              <div className="mt-0.5 line-clamp-1 text-[11px] text-ink-500">{desc}</div>
+            </div>
+          </motion.div>
+        )
+      })}
     </div>
   )
 }
@@ -227,36 +242,40 @@ function DesignsSection({ designs }: { designs: Design[] }) {
         </Reveal>
 
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {designs.slice(0, 4).map((d, i) => (
-            <Reveal key={d.id} delay={i * 0.06}>
-              <Link
-                to={`/designs/${d.id}`}
-                className="group block overflow-hidden rounded-2xl bg-white ring-1 ring-ink-200 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-ink-900/10"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-ink-100 to-ink-200">
-                  {d.thumbnailImage ? (
-                    <img
-                      src={d.thumbnailImage}
-                      alt={d.name}
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-3xl font-bold text-ink-400">
+          {designs.slice(0, 4).map((d, i) => {
+            const img = resolveDesignImage(d)
+            return (
+              <Reveal key={d.id} delay={i * 0.06}>
+                <Link
+                  to={`/designs/${d.id}`}
+                  className="group block overflow-hidden rounded-2xl bg-white ring-1 ring-ink-200 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-ink-900/10"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-ink-100 to-ink-200">
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={d.name}
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-3xl font-bold text-ink-400">
+                        {d.modelCode}
+                      </div>
+                    )}
+                    <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-[11px] font-bold tracking-wider text-ink-900">
                       {d.modelCode}
-                    </div>
-                  )}
-                  <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-[11px] font-bold tracking-wider text-ink-900">
-                    {d.modelCode}
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
-                </div>
-                <div className="p-5">
-                  <div className="text-[15px] font-semibold text-ink-900 transition group-hover:text-brand-600">{d.name}</div>
-                  <div className="mt-1 line-clamp-2 text-sm text-ink-500">{d.description}</div>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-900/40 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+                  </div>
+                  <div className="p-5">
+                    <div className="text-[15px] font-semibold text-ink-900 transition group-hover:text-brand-600">{d.name}</div>
+                    <div className="mt-1 line-clamp-2 text-sm text-ink-500">{d.description}</div>
+                  </div>
+                </Link>
+              </Reveal>
+            )
+          })}
           {designs.length === 0 && (
             <div className="col-span-full rounded-2xl border border-dashed border-ink-300 bg-white p-10 text-center text-sm text-ink-500">
               디자인 모델이 아직 등록되지 않았습니다.

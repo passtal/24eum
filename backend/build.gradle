@@ -64,3 +64,9 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// @PathVariable / @RequestParam 의 파라미터 이름을 reflection 으로 알 수 있게 -parameters 플래그를 켠다.
+// (Spring MVC 6.x 에서 이름을 명시하지 않은 PathVariable 이 400 으로 떨어지는 문제 해결)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += '-parameters'
+}
